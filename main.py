@@ -1,5 +1,5 @@
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+#os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import tensorflow as tf
 from tensorflow import keras
@@ -10,6 +10,7 @@ from tensorflow.keras.layers import Flatten
 from tensorflow.keras.layers import Conv2D
 from tensorflow.keras.layers import MaxPooling2D
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.utils import to_categorical
 
 
 # Helper libraries
@@ -29,8 +30,13 @@ test_images = test_images.reshape(test_images.shape[0], test_images.shape[1], te
 class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
 # # Normalize
-# train_images /= 255
-# test_images /= 255
+train_images /= 255
+test_images /= 255
+
+# One hot encode
+train_labels = to_categorical(train_labels, len(class_names))
+test_labels = to_categorical(test_labels, len(class_names))
+
 
 # # Show first 25 scaled images with there label
 # plt.figure(figsize=(10,10))
@@ -56,19 +62,17 @@ model.add(Dense(128, activation='relu'))
 model.add(Dense(len(class_names), activation='softmax'))
 
 # Compile model
-model.compile(loss='categorical_crossentropy',
-              optimizer=Adam(),
-              metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer=Adam(), metrics=['accuracy'])
 
 # Train the layers
-model.fit(train_images, train_labels, 
+model.fit(x=train_images, y=train_labels, 
           validation_data=(test_images, test_labels), 
-          epochs=10, 
+          epochs=100, 
           batch_size=200,
           shuffle=True)
 
-# Save model
-model.save('cifar10.h5')
+# # Save model
+# model.save('cifar10.h5')
 
 # Final evaluation of the model
 metrics = model.evaluate(test_images, test_labels, verbose=0)
