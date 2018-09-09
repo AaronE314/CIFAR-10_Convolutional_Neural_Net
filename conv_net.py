@@ -12,14 +12,15 @@ from tensorflow.keras.utils import to_categorical
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 
 class Conv_Net:
-
 
     def __init__(self, class_names, num_predictions=20, epochs=25, batch_size=32, data_aug=False):
         self.class_names = class_names
         self.num_classes = len(self.class_names)
-        self.save_dir = os.path.join(os.getcwd(), 'saved_models')
+        self.weights_dir = os.path.join(os.getcwd(), 'saved_models')
+        self.pdf_dir = os.path.join(os.getcwd(), 'output')
         self.model_name = 'cifar10.h5'
         self.num_predictions = num_predictions
         self.epochs = epochs
@@ -122,18 +123,18 @@ class Conv_Net:
         return self.model.predict(val)
 
     def _load_weights(self):
-        if not os.path.isdir(self.save_dir):
+        if not os.path.isdir(self.weights_dir):
             print("No Weights found.")
             return
-        model_path = os.path.join(self.save_dir, self.model_name)
+        model_path = os.path.join(self.weights_dir, self.model_name)
         self.model.load_weights(model_path)
 
     def _save_weights(self):
 
         # Save model and weights
-        if not os.path.isdir(self.save_dir):
-            os.makedirs(self.save_dir)
-        model_path = os.path.join(self.save_dir, self.model_name)
+        if not os.path.isdir(self.weights_dir):
+            os.makedirs(self.weights_dir)
+        model_path = os.path.join(self.weights_dir, self.model_name)
         self.model.save(model_path)
         print('Saved trained model at {:s}'.format(model_path))
 
@@ -143,7 +144,7 @@ class Conv_Net:
         plt.xticks([])
         plt.yticks([])
     
-        plt.imshow(img)
+        plt.imshow(img, interpolation='spline16')
 
         predicted_label = np.argmax(predictions_array)
         if predicted_label == true_label:
@@ -181,15 +182,30 @@ class Conv_Net:
             self._plot_value_array(i, predictions, self.test_labels)
         plt.show()
 
+    def save_results_as_pdf(self):
+        
+        if not os.path.isdir(self.pdf_dir):
+            os.makedirs(self.pdf_dir)
+        pdf_path = os.path.join(self.pdf_dir, 'predictions.pdf')
+        pdf = PdfPages(pdf_path)
 
-# # Show first 25 scaled images with there label
-# plt.figure(figsize=(10,10))
-# for i in range(25):
-#     plt.subplot(5,5,i+1)
-#     plt.xticks([])
-#     plt.yticks([])
-#     plt.grid(False)
-#     plt.imshow(train_images[i])
-#     plt.xlabel(class_names[train_labels[i][0]])
+        num_rows = 4
+        num_cols = 2
+        predictions = self.model.predict(self.test_images)
+        num_images = num_rows*num_cols
 
-# plt.show()
+        #total_images = len(self.test_images)
+        total_images = 160
+
+        for j in range(0, total_images, num_images):
+            chunk_img = self.test_images[j:j + num_images]
+            chunk_labels = self.test_labels[j:j + num_images]
+            fig = plt.figure(figsize=(2*2*num_cols, 2*num_rows))
+            for i in range(num_images):
+                plt.subplot(num_rows, 2*num_cols, 2*i+1)
+                self._plot_image(i, predictions, chunk_labels, chunk_img)
+                plt.subplot(num_rows, 2*num_cols, 2*i+2)
+                self._plot_value_array(i, predictions, chunk_labels)
+            pdf.savefig(fig)
+            plt.close(fig)
+        pdf.close()

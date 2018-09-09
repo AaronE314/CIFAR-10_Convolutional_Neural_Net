@@ -5,6 +5,8 @@ class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', '
 
 cifair = Conv_Net(class_names)
 
-#cifair.train()
+cifair.train()
 
-cifair.plot_results(5, 5)
+#cifair.plot_results(5, 5)
+
+cifair.save_results_as_pdf()
