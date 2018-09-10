@@ -1,5 +1,5 @@
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+#os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import tensorflow as tf
 from tensorflow import keras
@@ -27,7 +27,7 @@ class Conv_Net:
         self.batch_size = batch_size
         self.data_augmentation=data_aug
         self.color = 3 if color else 1
-
+        
         self._load_data(dataset)
         self._create_model()
         self._load_weights()

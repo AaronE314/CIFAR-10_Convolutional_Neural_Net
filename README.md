@@ -16,3 +16,4 @@ The weights of each dataset is saved under the saved_models folder, and the outp
 | --- | --- |
 | mnist | 99.22%  |
 | cifar10 | 76.72% |
+| fashion mnist | 91.39% |
