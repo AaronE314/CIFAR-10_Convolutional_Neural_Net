@@ -102,9 +102,9 @@ function getTouchPos(e) {
         let e = event;
     }
 
-    if (e.touches) {
-        if (e.touches.length == 1) {
-            let touch = e.touches[0];
+    if (e.changedTouches) {
+        if (e.changedTouches.length == 1) {
+            let touch = e.changedTouches[0];
             touchX = touch.pageX - touch.target.offsetLeft;
             touchY = touch.pageY - touch.target.offsetTop;
         }
@@ -146,7 +146,7 @@ function predict() {
     const predictionValues = prediction.dataSync();
 
     let isThereAnyPrediction = false;
-    for (index = 0; index < predictedValues.length; index++) {
+    for (index = 0; index < predictionValues.length; index++) {
         if (predictionValues[index] > 0.5) {
             isThereAnyPrediction = true;
             document.getElementById('blankspace').innerHTML = '<br/>Predicted Number: ' + index;
