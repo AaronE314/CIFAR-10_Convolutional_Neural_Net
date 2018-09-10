@@ -10,5 +10,6 @@ cifair_cnn = Conv_Net(class_names, cifar10, 'cifar10')
 
 #cifair.plot_results(5, 5)
 
+cifair_cnn.evaluate()
 
 cifair_cnn.save_results_as_pdf()

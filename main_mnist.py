@@ -9,4 +9,6 @@ mnist_cnn = Conv_Net(class_names, mnist, 'mnist', color=False, epochs=10)
 
 #mnist_cnn.plot_results(5, 5)
 
+mnist_cnn.evaluate()
+
 mnist_cnn.save_results_as_pdf()
