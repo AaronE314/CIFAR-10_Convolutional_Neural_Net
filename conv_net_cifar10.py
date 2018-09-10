@@ -3,7 +3,6 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, BatchNormalization
 from tensorflow.keras.optimizers import Adam
@@ -16,25 +15,25 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 class Conv_Net:
 
-    def __init__(self, class_names, num_predictions=20, epochs=25, batch_size=32, data_aug=False):
+    def __init__(self, class_names, dataset, saveName, num_predictions=20, epochs=25, batch_size=32, data_aug=False):
         self.class_names = class_names
         self.num_classes = len(self.class_names)
         self.weights_dir = os.path.join(os.getcwd(), 'saved_models')
         self.pdf_dir = os.path.join(os.getcwd(), 'output')
-        self.model_name = 'cifar10.h5'
+        self.model_name = '{}.h5'.format(saveName)
         self.num_predictions = num_predictions
+        self.saveName=saveName
         self.epochs = epochs
         self.batch_size = batch_size
         self.data_augmentation=data_aug
 
-
-        self._load_data()
+        self._load_data(dataset)
         self._create_model()
         self._load_weights()
 
-    def _load_data(self):
+    def _load_data(self, dataset):
         # Load data
-        (self.train_images, self.train_labels), (self.test_images, self.test_labels) = cifar10.load_data()
+        (self.train_images, self.train_labels), (self.test_images, self.test_labels) = dataset.load_data()
 
         # Normalize
         self.train_images = self.train_images.astype('float32')
@@ -186,7 +185,7 @@ class Conv_Net:
         
         if not os.path.isdir(self.pdf_dir):
             os.makedirs(self.pdf_dir)
-        pdf_path = os.path.join(self.pdf_dir, 'predictions.pdf')
+        pdf_path = os.path.join(self.pdf_dir, '{}.pdf'.format(self.saveName))
         pdf = PdfPages(pdf_path)
 
         num_rows = 4
@@ -200,12 +199,13 @@ class Conv_Net:
         for j in range(0, total_images, num_images):
             chunk_img = self.test_images[j:j + num_images]
             chunk_labels = self.test_labels[j:j + num_images]
+            chunk_predictions = predictions[j:j + num_images]
             fig = plt.figure(figsize=(2*2*num_cols, 2*num_rows))
             for i in range(num_images):
                 plt.subplot(num_rows, 2*num_cols, 2*i+1)
-                self._plot_image(i, predictions, chunk_labels, chunk_img)
+                self._plot_image(i, chunk_predictions, chunk_labels, chunk_img)
                 plt.subplot(num_rows, 2*num_cols, 2*i+2)
-                self._plot_value_array(i, predictions, chunk_labels)
+                self._plot_value_array(i, chunk_predictions, chunk_labels)
             pdf.savefig(fig)
             plt.close(fig)
         pdf.close()
