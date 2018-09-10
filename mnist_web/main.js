@@ -35,7 +35,7 @@ function drawLine(ctx, x, y, size) {
 
 function clearCanvas(canvas, ctx) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    document.getElementById('canvasarea').innerHTML = '';
+    document.getElementById('canvas').innerHTML = '';
 }
 
 function sketchpad_mouseDown() {
