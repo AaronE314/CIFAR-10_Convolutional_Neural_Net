@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>MNIST Identifier</title>
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.12.5"> </script>
+        <script src="main.js" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    </head>
+
+    <body onload="init()">
+        <div id="app">
+            <h4 style="margin-left: 10px;">Draw a number in the box</h4>
+            <div class="canvasarea">
+                <canvas id="canvas" height="140" width="140"></canvas>
+                <input type="submit" value="Predict" id="predictbutton" onclick="predict()">
+                <input type="submit" value="Clear" id="clearbutton" onclick="clearCanvas(canvas, ctx)"> 
+            </div>
+            <div id="blankspace" class="rightside">
+            </div> 
+        </div>
+    </body>
+</html>
